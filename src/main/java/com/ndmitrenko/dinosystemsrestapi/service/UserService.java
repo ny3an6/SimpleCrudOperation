@@ -23,24 +23,24 @@ public class UserService {
 
     public List<UserDto> getAllUsers(){
         List<User> users = userRepository.findAll();
-        System.out.println(users.isEmpty());
         if(!users.isEmpty()){
             return toDto(users);
         }else throw new DefaultException("There is no user");
     }
 
     public List<UserDto> getUser(String firstName){
-        return toDto(userRepository.findByFirstName(firstName).orElseThrow(() -> new DefaultException("User not found")));
+        return toDto(userRepository.findByFirstName(firstName).orElseThrow(() ->
+                new DefaultException(HttpStatus.NOT_FOUND,"User not found")));
     }
 
     public UserDto createUser(User user){
-        String firstName = ToUpperCaseString.toUpperCase(user.getFirstName().toLowerCase().trim());
+        String firstName = ToUpperCaseString.toUpperCase(user.getFirstName().toLowerCase().trim()); // validate user firstName and secondName
         String secondName = ToUpperCaseString.toUpperCase(user.getSecondName().toLowerCase().trim());
 
-        userRepository.findUserBySecondName(ToUpperCaseString.toUpperCase(secondName)).ifPresent(ex -> {
+        userRepository.findUserBySecondName(ToUpperCaseString.toUpperCase(secondName)).ifPresent(ex -> { // checking for existing user
             throw new DefaultException(HttpStatus.UNPROCESSABLE_ENTITY, "User is already exist"); });
 
-        if (firstName.isEmpty()){
+        if (firstName.isEmpty()){ // fields must be not null
             throw new DefaultException("Enter first name");
         }
         if(secondName.isEmpty()){
@@ -52,7 +52,7 @@ public class UserService {
         if(user.getDateOfBirth() == null){
             throw new DefaultException("Enter date of birth name");
         }
-        user.setFirstName(firstName);
+        user.setFirstName(firstName); // save edited fields
         user.setSecondName(secondName);
         userRepository.save(user);
 
@@ -61,8 +61,8 @@ public class UserService {
 
     public UserDto editUserInformation(String secondName, User user){
         User userCandidate = userRepository.findUserBySecondName(secondName).orElseThrow(() ->
-                new DefaultException(HttpStatus.NOT_FOUND, "User not found"));
-        userCandidate.setFirstName(ToUpperCaseString.toUpperCase(user.getFirstName().trim()));
+                new DefaultException(HttpStatus.NOT_FOUND, "User not found")); // checking for user existing
+        userCandidate.setFirstName(ToUpperCaseString.toUpperCase(user.getFirstName().trim())); // save and validate firstName and secondName
         userCandidate.setSecondName(ToUpperCaseString.toUpperCase(user.getSecondName().trim()));
         userCandidate.setAddress(user.getAddress());
         userCandidate.setDateOfBirth(user.getDateOfBirth());
