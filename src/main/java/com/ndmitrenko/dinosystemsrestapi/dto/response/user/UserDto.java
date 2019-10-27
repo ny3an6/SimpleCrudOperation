@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 @Builder
 @Data
 public class UserDto {
+
     private String firstName;
     private String secondName;
     private Date datOfBirth;

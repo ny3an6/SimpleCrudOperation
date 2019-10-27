@@ -13,7 +13,9 @@ HELP.md
 
 ### gradle ###
 .gradle
-/build
+
+!gradle-wrapper.jar
+gradle-app.setting
 
 ### IntelliJ IDEA ###
 .idea
