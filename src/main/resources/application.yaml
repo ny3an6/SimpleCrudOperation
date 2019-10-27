@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: "dev"
+    active: "h2"
   main:
     banner-mode: "off"
   datasource:
@@ -18,7 +18,28 @@ spring:
 ---
 
 spring:
-  profiles: dev
+  profiles: postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5432/userdb
+    username: postgres
+    password:
+    driver-class-name: org.postgresql.Driver
+    initialization-mode: always
+    platform: postgres
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        temp:
+          use_jdbc_metadata_defaults: false
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+---
+
+spring:
+  profiles: h2
   h2:
     console:
       enabled: true
@@ -28,6 +49,7 @@ spring:
     driverClassName: org.h2.Driver
     username: Nikita
     password:
+    platform: h2
   jpa:
     properties:
       hibernate:

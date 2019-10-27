@@ -56,7 +56,7 @@ public class UserController {
         return userService.editUserInformation(secondName, user);
     }
 
-    @ApiOperation(value = "Delete user")
+    @ApiOperation(value = "Delete user by second name")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "deleting was successful"),
     })

@@ -25,33 +25,34 @@ public class UserService {
         List<User> users = userRepository.findAll();
         if(!users.isEmpty()){
             return toDto(users);
-        }else throw new DefaultException("There is no user");
+        }else throw new DefaultException(HttpStatus.NOT_FOUND, "There is no user");
     }
 
     public List<UserDto> getUser(String firstName){
         return toDto(userRepository.findByFirstName(firstName).orElseThrow(() ->
-                new DefaultException(HttpStatus.NOT_FOUND,"User not found")));
+                new DefaultException(HttpStatus.NOT_FOUND, "User not found")));
     }
 
     public UserDto createUser(User user){
+
+        if (user.getFirstName().trim().isEmpty()){ // fields must be not null
+            throw new DefaultException(HttpStatus.BAD_REQUEST,"Enter first name");
+        }
+        if(user.getSecondName().trim().isEmpty()){
+            throw new DefaultException(HttpStatus.BAD_REQUEST, "Enter second name");
+        }
+        if(user.getAddress().trim().isEmpty()){
+            throw new DefaultException(HttpStatus.BAD_REQUEST, "Enter user address");
+        }
+        if(user.getDateOfBirth() == null){
+            throw new DefaultException(HttpStatus.BAD_REQUEST,"Enter date of birth name");
+        }
+
         String firstName = ToUpperCaseString.toUpperCase(user.getFirstName().toLowerCase().trim()); // validate user firstName and secondName
         String secondName = ToUpperCaseString.toUpperCase(user.getSecondName().toLowerCase().trim());
 
-        userRepository.findUserBySecondName(ToUpperCaseString.toUpperCase(secondName)).ifPresent(ex -> { // checking for existing user
+        userRepository.findUserBySecondName(secondName).ifPresent(ex -> { // checking for existing user
             throw new DefaultException(HttpStatus.UNPROCESSABLE_ENTITY, "User is already exist"); });
-
-        if (firstName.isEmpty()){ // fields must be not null
-            throw new DefaultException("Enter first name");
-        }
-        if(secondName.isEmpty()){
-            throw new DefaultException("Enter second name");
-        }
-        if(user.getAddress().isEmpty()){
-            throw new DefaultException("Enter user address");
-        }
-        if(user.getDateOfBirth() == null){
-            throw new DefaultException("Enter date of birth name");
-        }
         user.setFirstName(firstName); // save edited fields
         user.setSecondName(secondName);
         userRepository.save(user);
